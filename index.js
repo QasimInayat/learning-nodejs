@@ -1,27 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
-const PORT = 5000;
+const dotenv = require('dotenv');
 
-// Middleware
+dotenv.config();
+const app = express();
+const PORT = process.env.PORT || 5000;
+
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect('mongodb://127.0.0.1:27017/todoapp')
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/todoapp')
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.error(err));
 
-// Home
-app.get('/', (req, res) => res.send('Todo API with MongoDB is running...'));
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/todos', require('./routes/todoRoutes'));
 
-const todoRoutes = require('./routes/todoRoutes');
-app.use('/api/todos', todoRoutes);
-
-
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/', authRoutes);
-
-
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
