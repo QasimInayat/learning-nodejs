@@ -14,3 +14,4 @@ Follow these steps to setup the project.
 - <pre>npm install mongoose</pre>
 - <pre>npm install bcryptjs jsonwebtoken</pre>
 - <pre>npm install dotenv</pre>
+- <pre>npm install express-validator</pre>
