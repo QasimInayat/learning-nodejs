@@ -1,39 +1,37 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import type { Todo } from './todo.model';
-
+import { Todo } from './schemas/todo.schema';
 
 @Controller('todos')
 export class TodosController {
     constructor(private readonly todosService: TodosService) { }
 
     @Get()
-    findAll(): Todo[] {
+    async findAll(): Promise<Todo[]> {
         return this.todosService.findAll();
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string): Todo | undefined {
-        return this.todosService.findOne(Number(id));
+    async findOne(@Param('id') id: string): Promise<Todo> {
+        return this.todosService.findOne(id);
     }
 
     @Post()
-    create(@Body('title') title: string): Todo {
+    async create(@Body('title') title: string): Promise<Todo> {
         return this.todosService.create(title);
     }
 
     @Put(':id')
-    update(
+    async update(
         @Param('id') id: string,
-        @Body() updates: { title?: string; completed?: boolean }
-    ): Todo | undefined {
-        return this.todosService.update(Number(id), updates);
+        @Body() updates: { title?: string; completed?: boolean },
+    ): Promise<Todo> {
+        return this.todosService.update(id, updates);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string): { message: string } {
-        const success = this.todosService.remove(Number(id));
-        return success ? { message: 'Todo deleted' } : { message: 'Not found' };
+    async remove(@Param('id') id: string) {
+        await this.todosService.remove(id);
+        return { message: 'Todo deleted' };
     }
-
 }

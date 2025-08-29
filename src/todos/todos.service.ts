@@ -1,36 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import type { Todo } from './todo.model';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Todo, TodoDocument } from './schemas/todo.schema';
 
 @Injectable()
 export class TodosService {
-    private todos: Todo[] = [];
-    private id = 1;
+    constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) { }
 
-    findAll(): Todo[] {
-        return this.todos;
+    async findAll(): Promise<Todo[]> {
+        return this.todoModel.find().exec();
     }
 
-    findOne(id: number): Todo | undefined {
-        return this.todos.find(todo => todo.id === id);
-    }
-
-    create(title: string): Todo {
-        const todo = { id: this.id++, title, completed: false };
-        this.todos.push(todo);
+    async findOne(id: string): Promise<Todo> {
+        const todo = await this.todoModel.findById(id).exec();
+        if (!todo) throw new NotFoundException('Todo not found');
         return todo;
     }
 
-    update(id: number, updates: Partial<Todo>): Todo | undefined {
-        const todo = this.findOne(id);
-        if (!todo) return undefined;
-        Object.assign(todo, updates);
+    async create(title: string): Promise<Todo> {
+        const newTodo = new this.todoModel({ title });
+        return newTodo.save();
+    }
+
+    async update(id: string, updates: Partial<Todo>): Promise<Todo> {
+        const todo = await this.todoModel.findByIdAndUpdate(id, updates, { new: true }).exec();
+        if (!todo) throw new NotFoundException('Todo not found');
         return todo;
     }
 
-    remove(id: number): boolean {
-        const index = this.todos.findIndex(todo => todo.id === id);
-        if (index === -1) return false;
-        this.todos.splice(index, 1);
-        return true;
+    async remove(id: string): Promise<void> {
+        const result = await this.todoModel.findByIdAndDelete(id).exec();
+        if (!result) throw new NotFoundException('Todo not found');
     }
 }
