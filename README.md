@@ -1,5 +1,15 @@
+<pre>npm run start:dev</pre>
 <pre>npm install @nestjs/mongoose mongoose @nestjs/config</pre>
 <pre>npm install class-validator class-transformer</pre>
+<pre>
+npm install @nestjs/passport passport passport-jwt @nestjs/jwt bcryptjs<br>
+npm install -D @types/passport-jwt
+</pre>
+<pre>
+nest g module auth<br>
+nest g controller auth<br>
+nest g service auth
+</pre>
 
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>

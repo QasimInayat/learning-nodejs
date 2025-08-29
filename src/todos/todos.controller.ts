@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { TodosService } from './todos.service';
 import { Todo } from './schemas/todo.schema';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('todos')
+@UseGuards(AuthGuard('jwt')) // ✅ protect all routes
 export class TodosController {
     constructor(private readonly todosService: TodosService) { }
 
@@ -25,9 +26,7 @@ export class TodosController {
     }
 
     @Put(':id')
-    async update(
-        @Param('id') id: string,
-        @Body() updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    async update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto): Promise<Todo> {
         return this.todosService.update(id, updateTodoDto);
     }
 
